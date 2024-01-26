@@ -3,18 +3,23 @@ import sys
 
 pygame.init()
 
-screen = pygame.display.set_mode((400, 500))
+screen = pygame.display.set_mode((400, 600))
 clock = pygame.time.Clock()
+
+pygame.font.init()  # Initialize the font module
+font = pygame.font.Font(None, size=160)
 
 buttons = []
 
 
 class Button:
-    def __init__(self, position, size, button_id):
+    def __init__(self, colour, position, size, button_id):
         super().__init__()
         self.id = button_id
         self.image = pygame.Surface(size)
-        self.image.fill('red')
+
+        self.image.fill(colour)  # Replace 'default_color' with a default color if button_id is not found
+
         self.rect = self.image.get_rect()
         self.rect.topleft = position
         buttons.append(self)
@@ -36,26 +41,27 @@ class Button:
         return action
 
 
-Button((300, 0), (100, 100), "/")
-Button((300, 100), (100, 100), "x")
-Button((300, 200), (100, 100), "-")
-Button((300, 300), (100, 100), "+")
-Button((300, 400), (100, 100), "=")
+Button("red", (0, 100), (100, 100), "clear")
 
-Button((0, 100), (100, 100), 1)
-Button((100, 100), (100, 100), 2)
-Button((200, 100), (100, 100), 3)
-Button((0, 200), (100, 100), 4)
-Button((100, 200), (100, 100), 5)
-Button((200, 200), (100, 100), 6)
-Button((0, 300), (100, 100), 7)
-Button((100, 300), (100, 100), 8)
-Button((200, 300), (100, 100), 9)
-Button((0, 400), (100, 100), 0)
+Button("red", (300, 100), (100, 100), "/")
+Button("red", (300, 200), (100, 100), "*")
+Button("red", (300, 300), (100, 100), "-")
+Button("red", (300, 400), (100, 100), "+")
+Button("red", (300, 500), (100, 100), "=")
 
-pressed = []
-expression = ""
-current_number = ""
+Button("blue", (0, 200), (100, 100), 1)
+Button("blue", (100, 200), (100, 100), 2)
+Button("blue", (200, 200), (100, 100), 3)
+Button("blue", (0, 300), (100, 100), 4)
+Button("blue", (100, 300), (100, 100), 5)
+Button("blue", (200, 300), (100, 100), 6)
+Button("blue", (0, 400), (100, 100), 7)
+Button("blue", (100, 400), (100, 100), 8)
+Button("blue", (200, 400), (100, 100), 9)
+Button("blue", (0, 500), (100, 100), 0)
+
+current_number = ''
+expression = []
 
 running = True
 while running:
@@ -68,10 +74,31 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             for button in buttons:
                 if button.click(event.pos):
-                    pressed.append(button.id)
+                    if isinstance(button.id, int):
+                        current_number += str(button.id)
+                    else:
+                        if current_number:
+                            expression.append(int(current_number))
+                            current_number = ''
+                        expression.append(button.id)
 
     for button in buttons:
         button.draw(screen)
+
+    # Render and display the current number
+    text_surface = font.render(current_number, True, (255, 255, 255))
+    screen.blit(text_surface, (0, 0))
+
+    print(expression)
+    if expression:
+        if expression[-1] == "clear":
+            current_number = ""
+            expression.clear()
+        elif expression[-1] == "=":
+            current_expression = filter(lambda val: val != "=", expression)
+            equation_str = ''.join(str(item) for item in current_expression)
+            current_number = str(eval(equation_str))
+            expression.clear()
 
     pygame.display.update()
     screen.fill('black')
