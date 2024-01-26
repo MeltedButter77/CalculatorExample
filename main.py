@@ -30,6 +30,12 @@ class Button:
     def draw(self, surface):
         surface.blit(self.image, self.rect.topleft)
 
+        text = str(self.id)
+        if text == "clear":
+            text = "c"
+        text_surface = font.render(text, True, (255, 255, 255))
+        screen.blit(text_surface, self.rect.topleft)
+
     def click(self, click_pos):
         action = False
         # checks current mouse position collides with the button
