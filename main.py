@@ -18,7 +18,7 @@ class Button:
         self.id = button_id
         self.image = pygame.Surface(size)
 
-        self.image.fill(colour)  # Replace 'default_color' with a default color if button_id is not found
+        self.image.fill(colour)
 
         self.rect = self.image.get_rect()
         self.rect.topleft = position
